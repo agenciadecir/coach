@@ -1,11 +1,31 @@
 {
+  "buildCommand": "prisma generate && next build",
+  "installCommand": "bun install",
+  "framework": "nextjs",
   "regions": ["iad1"],
   "functions": {
-    "src/app/api/**": {
-      "maxDuration": 30
+    "src/app/api/**/*.{ts,js}": {
+      "memory": 1024,
+      "maxDuration": 10
     }
   },
-  "buildCommand": "prisma generate && prisma migrate deploy && next build",
-  "installCommand": "bun install",
-  "framework": "nextjs"
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
 }

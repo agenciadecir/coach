@@ -51,7 +51,9 @@ import {
   GripVertical,
   MessageCircle,
   MessageSquare,
-  History
+  History,
+  Key,
+  Loader2
 } from 'lucide-react'
 import { useAppStore } from '@/hooks/use-store'
 import { format } from 'date-fns'
@@ -277,6 +279,11 @@ export function StudentDetailView({ studentId }: { studentId: string }) {
     method: '',
     notes: ''
   })
+
+  // Reset password state
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [resettingPassword, setResettingPassword] = useState(false)
 
   const isCoach = session?.user.role === 'COACH'
 
@@ -884,6 +891,17 @@ export function StudentDetailView({ studentId }: { studentId: string }) {
             </div>
             {student.goals && <div className="mt-3 flex items-start gap-2"><Target className="w-4 h-4 text-emerald-400 mt-1" /><p className="text-slate-300">{student.goals}</p></div>}
           </div>
+          {isCoach && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setResetPasswordDialogOpen(true)}
+              className="border-slate-600 text-slate-400 hover:text-white hover:border-slate-500"
+            >
+              <Key className="w-4 h-4 mr-2" />
+              Restablecer Contraseña
+            </Button>
+          )}
         </div>
 
         {/* Stats */}
@@ -1907,6 +1925,82 @@ export function StudentDetailView({ studentId }: { studentId: string }) {
             >
               <Save className="w-4 h-4 mr-2" />
               {savingCoachNotes ? 'Guardando...' : 'Guardar Nota'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="w-5 h-5 text-emerald-400" />
+              Restablecer Contraseña
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Establece una nueva contraseña para <strong className="text-white">{student?.user.name || student?.user.email}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="newPassword" className="text-slate-300 mb-2 block">
+              Nueva Contraseña
+            </Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Mínimo 6 caracteres"
+              className="bg-slate-700/50 border-slate-600 focus:border-emerald-500"
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => {
+              setResetPasswordDialogOpen(false)
+              setNewPassword('')
+            }} className="text-slate-400">
+              <X className="w-4 h-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                if (newPassword.length < 6) {
+                  toast({ title: 'La contraseña debe tener al menos 6 caracteres', variant: 'destructive' })
+                  return
+                }
+                setResettingPassword(true)
+                try {
+                  const res = await fetch(`/api/users/${studentId}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword })
+                  })
+                  const data = await res.json()
+                  if (!res.ok) throw new Error(data.error || 'Error')
+                  toast({ title: 'Contraseña actualizada correctamente' })
+                  setResetPasswordDialogOpen(false)
+                  setNewPassword('')
+                } catch (error) {
+                  toast({ title: 'Error al restablecer la contraseña', variant: 'destructive' })
+                } finally {
+                  setResettingPassword(false)
+                }
+              }}
+              disabled={resettingPassword}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              {resettingPassword ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Key className="w-4 h-4 mr-2" />
+                  Guardar Contraseña
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model User {
@@ -89,6 +90,8 @@ model Routine {
   student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
   trainingDays TrainingDay[]
 
+  @@index([studentId])
+  @@index([coachId])
   @@map("routines")
 }
 
@@ -168,6 +171,8 @@ model Diet {
   student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   meals         Meal[]
 
+  @@index([studentId])
+  @@index([coachId])
   @@map("diets")
 }
 
@@ -195,28 +200,28 @@ model Progress {
   id           String   @id @default(cuid())
   studentId    String
   date         DateTime @default(now())
-  weight       Float?
-  height       Float?
-  bodyFat      Float?
-  muscleMass   Float?
-  neck         Float?
-  shoulders    Float?
-  chest        Float?
-  waist        Float?
-  hip          Float?
-  rightArm     Float?
-  leftArm      Float?
-  rightForearm Float?
-  leftForearm  Float?
-  rightThigh   Float?
-  leftThigh    Float?
-  rightCalf    Float?
-  leftCalf     Float?
+  weight       Double?
+  height       Double?
+  bodyFat      Double?
+  muscleMass   Double?
+  neck         Double?
+  shoulders    Double?
+  chest        Double?
+  waist        Double?
+  hip          Double?
+  rightArm     Double?
+  leftArm      Double?
+  rightForearm Double?
+  leftCalf     Double?
+  rightThigh   Double?
+  leftThigh    Double?
+  rightCalf    Double?
+  leftForearm  Double?
   frontPhoto   String?
   backPhoto    String?
   sidePhoto    String?
   notes        String?
-  coachNotes   String?  // Professional feedback from coach
+  coachNotes   String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -228,7 +233,7 @@ model Progress {
 model PaymentSettings {
   id                String   @id @default(cuid())
   coachId           String   @unique
-  monthlyAmount     Float    @default(0)
+  monthlyAmount     Double   @default(0)
   currency          String   @default("ARS")
   acceptCash        Boolean  @default(true)
   acceptTransfer    Boolean  @default(true)
@@ -249,7 +254,7 @@ model PaymentSettings {
 model Payment {
   id                  String        @id @default(cuid())
   studentId           String
-  amount              Float
+  amount              Double
   currency            String        @default("ARS")
   status              PaymentStatus @default(PENDING)
   month               Int
@@ -278,6 +283,7 @@ model Payment {
   @@index([studentId])
   @@index([status])
   @@index([month, year])
+  @@index([coachId])
   @@map("payments")
 }
 
