@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 2>&1 | tee dev.log",
+    "dev": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' next dev -p 3000 2>&1 | tee dev.log",
     "build": "prisma generate && next build",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate",
+    "db:push": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' prisma db push",
+    "db:generate": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
+    "db:export": "bun run scripts/export-data.ts",
+    "db:import": "bun run scripts/import-data.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
