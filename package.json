@@ -1,20 +1,16 @@
 {
-  "name": "gym-coach-app",
-  "version": "1.0.0",
+  "name": "nextjs_tailwind_shadcn_ts",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' next dev -p 3000 2>&1 | tee dev.log",
-    "build": "prisma generate && next build",
+    "dev": "next dev -p 3000 2>&1 | tee dev.log",
+    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
-    "db:push": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' prisma db push",
-    "db:generate": "DATABASE_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true' DIRECT_URL='postgresql://postgres.bgtqnwneuxbjhaqtlnsj:GymCoach2026-@aws-1-us-east-1.pooler.supabase.com:5432/postgres' prisma generate",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:reset": "prisma migrate reset",
-    "db:export": "bun run scripts/export-data.ts",
-    "db:import": "bun run scripts/import-data.ts",
-    "postinstall": "prisma generate"
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
